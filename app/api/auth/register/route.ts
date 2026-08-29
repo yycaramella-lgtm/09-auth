@@ -15,14 +15,12 @@ export async function POST(req: NextRequest) {
 
     if (setCookie) {
       const cookieStore = await cookies();
-
       const cookieArray = Array.isArray(setCookie)
         ? setCookie
         : [setCookie];
 
       for (const cookieString of cookieArray) {
         const parsed = parseSetCookie(cookieString);
-
         if (parsed.value) {
           cookieStore.set(parsed.name, parsed.value, {
             httpOnly: parsed.httpOnly,
@@ -46,7 +44,6 @@ export async function POST(req: NextRequest) {
         error.response?.status,
         error.response?.data,
       );
-
       return NextResponse.json(
         {
           error:
