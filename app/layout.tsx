@@ -4,6 +4,7 @@ import { Roboto } from 'next/font/google';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
+import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
 import './globals.css';
 
@@ -37,17 +38,24 @@ interface RootLayoutProps {
   modal: React.ReactNode;
 }
 
-const RootLayout = ({ children, modal }: RootLayoutProps) => {
+const RootLayout = ({
+  children,
+  modal,
+}: RootLayoutProps) => {
   return (
     <html lang="en">
       <body className={roboto.variable}>
         <TanStackProvider>
-          <Header />
-          <main>
-            {children}
-            {modal}
-          </main>
-          <Footer />
+          <AuthProvider>
+            <Header />
+
+            <main>
+              {children}
+              {modal}
+            </main>
+
+            <Footer />
+          </AuthProvider>
         </TanStackProvider>
       </body>
     </html>
