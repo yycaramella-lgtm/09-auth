@@ -11,12 +11,12 @@ import css from './AuthNavigation.module.css';
 const AuthNavigation = () => {
   const router = useRouter();
 
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
   const isAuthenticated = useAuthStore(
-    (state) => state.isAuthenticated,
+    state => state.isAuthenticated,
   );
   const clearIsAuthenticated = useAuthStore(
-    (state) => state.clearIsAuthenticated,
+    state => state.clearIsAuthenticated,
   );
 
   const handleLogout = async () => {
@@ -34,6 +34,12 @@ const AuthNavigation = () => {
   if (isAuthenticated && user) {
     return (
       <ul className={css.navigation}>
+        <li>
+          <span className={css.userEmail}>
+            {user.email || user.username}
+          </span>
+        </li>
+
         <li>
           <Link href="/">Home</Link>
         </li>

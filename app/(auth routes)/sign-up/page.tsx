@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 import css from './page.module.css';
+
 import {
   register,
   type RegisterRequest,
 } from '@/lib/api/clientApi';
+
+import { useAuthStore } from '@/lib/store/authStore';
 
 interface ApiErrorResponse {
   error?: string;
@@ -17,6 +20,10 @@ interface ApiErrorResponse {
 
 const SignUp = () => {
   const router = useRouter();
+
+  const setUser = useAuthStore(
+    state => state.setUser,
+  );
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,14 +40,19 @@ const SignUp = () => {
     const formData = new FormData(form);
 
     const data: RegisterRequest = {
-      email: String(formData.get('email') ?? '').trim(),
-      password: String(formData.get('password') ?? ''),
+      email: String(
+        formData.get('email') ?? '',
+      ).trim(),
+      password: String(
+        formData.get('password') ?? '',
+      ),
     };
 
     try {
       const user = await register(data);
 
       if (user) {
+        setUser(user);
         router.push('/profile');
         router.refresh();
       }

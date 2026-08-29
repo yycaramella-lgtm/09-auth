@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { getServerMe } from '@/lib/api/serverApi';
@@ -29,9 +30,11 @@ const Profile = async () => {
       <div className={css.profile}>
         <div className={css.avatar}>
           {user.avatar ? (
-            <img
+            <Image
               src={user.avatar}
               alt={`${user.username}'s avatar`}
+              width={100}
+              height={100}
             />
           ) : (
             <span>

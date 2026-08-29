@@ -1,83 +1,72 @@
-import axios from 'axios';
 import { cookies } from 'next/headers';
+
+import { api } from './api';
 
 import type { Note } from '@/types/note';
 import type { User } from '@/types/user';
 
-const baseURL = 'https://notehub-api.goit.study';
-
-export const serverApi = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
-
 const getCookieHeader = async (): Promise<string> => {
   const cookieStore = await cookies();
 
-  return cookieStore.toString();
+  return cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join('; ');
 };
 
-serverApi.interceptors.request.use(async config => {
+export const checkServerSession = async () => {
   const cookieHeader = await getCookieHeader();
 
-  if (cookieHeader) {
-    config.headers.Cookie = cookieHeader;
-  }
-
-  return config;
-});
-
-export interface FetchNotesParams {
-  page: number;
-  perPage: number;
-  search?: string;
-  tag?: string;
-}
-
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
-
-export const getServerMe = async (): Promise<User> => {
-  const response = await serverApi.get<User>('/users/me');
-
-  return response.data;
+  return api.get('/auth/session', {
+    headers: {
+      Cookie: cookieHeader,
+    },
+  });
 };
 
-export const checkServerSession = async (): Promise<boolean> => {
-  try {
-    const response = await serverApi.get('/auth/session');
+export const fetchNoteById = async (
+  id: string,
+): Promise<Note> => {
+  const cookieHeader = await getCookieHeader();
 
-    return response.status === 200;
-  } catch {
-    return false;
-  }
-};
-
-export const fetchServerNotes = async ({
-  page,
-  perPage,
-  search,
-  tag,
-}: FetchNotesParams): Promise<FetchNotesResponse> => {
-  const response = await serverApi.get<FetchNotesResponse>('/notes', {
-    params: {
-      page,
-      perPage,
-      ...(search ? { search } : {}),
-      ...(tag ? { tag } : {}),
+  const response = await api.get<Note>(`/notes/${id}`, {
+    headers: {
+      Cookie: cookieHeader,
     },
   });
 
   return response.data;
 };
 
-export const fetchServerNoteById = async (id: string): Promise<Note> => {
-  const response = await serverApi.get<Note>(`/notes/${id}`);
+export const getServerMe = async (): Promise<User> => {
+  const cookieHeader = await getCookieHeader();
+
+  const response = await api.get<User>('/users/me', {
+    headers: {
+      Cookie: cookieHeader,
+    },
+  });
+
+  return response.data;
+};
+
+export const fetchNotes = async (params?: {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  tag?: string;
+}) => {
+  const cookieHeader = await getCookieHeader();
+
+  const response = await api.get<{
+    notes: Note[];
+    totalPages: number;
+  }>('/notes', {
+    params,
+    headers: {
+      Cookie: cookieHeader,
+    },
+  });
 
   return response.data;
 };

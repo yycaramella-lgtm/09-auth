@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteById } from '@/lib/api/clientApi';
 
 const NoteDetailsClient = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,7 +38,11 @@ const NoteDetailsClient = () => {
 
           <p>{note.content}</p>
 
-          <p>{new Date(note.createdAt).toLocaleString()}</p>
+          <p>
+            {new Date(
+              note.createdAt,
+            ).toLocaleString()}
+          </p>
         </div>
       </div>
     </main>
