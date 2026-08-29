@@ -20,18 +20,16 @@ export async function POST(req: NextRequest) {
         : [setCookie];
 
       for (const cookieString of cookieArray) {
-        const parsed = parseSetCookie(cookieString);
-        if (parsed.value) {
-          cookieStore.set(parsed.name, parsed.value, {
-            httpOnly: parsed.httpOnly,
-            secure: parsed.secure,
-            sameSite: parsed.sameSite,
-            path: parsed.path ?? '/',
-            maxAge: parsed.maxAge,
-            expires: parsed.expires,
-          });
-        }
-      }
+  const parsed = parseSetCookie(cookieString);
+
+  if (parsed.value) {
+    cookieStore.set(
+      parsed.name,
+      parsed.value,
+      parsed,
+    );
+  }
+}
     }
 
     return NextResponse.json(response.data, {
